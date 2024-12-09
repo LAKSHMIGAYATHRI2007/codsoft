@@ -1,0 +1,113 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int SIZE = 3;
+
+// Function to initialize the board
+void initializeBoard(vector<vector<char>>& board) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+// Function to display the current board
+void displayBoard(const vector<vector<char>>& board) {
+    cout << "  0   1   2\n";
+    for (int i = 0; i < SIZE; ++i) {
+        cout << i << " ";
+        for (int j = 0; j < SIZE; ++j) {
+            cout << board[i][j];
+            if (j < SIZE - 1) cout << " | ";
+        }
+        cout << endl;
+        if (i < SIZE - 1) cout << " ---|---|---\n";
+    }
+}
+
+// Function to check if a player has won
+bool checkWin(const vector<vector<char>>& board, char player) {
+    // Check rows and columns
+    for (int i = 0; i < SIZE; ++i) {
+        if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
+            (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
+            return true;
+        }
+    }
+    
+    // Check diagonals
+    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
+        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
+        return true;
+    }
+
+    return false;
+}
+
+// Function to check if the board is full (draw condition)
+bool checkDraw(const vector<vector<char>>& board) {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            if (board[i][j] == ' ') {
+                return false; // Empty space found, not a draw
+            }
+        }
+    }
+    return true; // No empty spaces, it's a draw
+}
+
+// Function to handle the player's move
+bool makeMove(vector<vector<char>>& board, int row, int col, char player) {
+    if (row < 0 || row >= SIZE || col < 0 || col >= SIZE || board[row][col] != ' ') {
+        return false; // Invalid move
+    }
+    board[row][col] = player;
+    return true;
+}
+
+int main() {
+    char player = 'X';
+    vector<vector<char>> board(SIZE, vector<char>(SIZE));
+    bool gameOver = false;
+
+    do {
+        initializeBoard(board);
+        gameOver = false;
+        while (!gameOver) {
+            displayBoard(board);
+            int row, col;
+
+            cout << "Player " << player << ", enter your move (row and column): ";
+            cin >> row >> col;
+
+            if (makeMove(board, row, col, player)) {
+                if (checkWin(board, player)) {
+                    displayBoard(board);
+                    cout << "Player " << player << " wins!" << endl;
+                    gameOver = true;
+                } else if (checkDraw(board)) {
+                    displayBoard(board);
+                    cout << "It's a draw!" << endl;
+                    gameOver = true;
+                } else {
+                    // Switch player
+                    player = (player == 'X') ? 'O' : 'X';
+                }
+            } else {
+                cout << "Invalid move! Try again." << endl;
+            }
+        }
+
+        char playAgain;
+        cout << "Do you want to play again? (y/n): ";
+        cin >> playAgain;
+        if (playAgain == 'n' || playAgain == 'N') {
+            gameOver = true;
+        }
+
+    } while (!gameOver);
+
+    return 0;
+}
